@@ -5,15 +5,11 @@
 { config, pkgs, ... }:
 
 {
-  nixpkgs.config = {
-    allowUnfree = true;
-    firefox.enableAdobeFlash = true;
-  };
-
   imports =
     [ # Include the results of the hardware scan.
       ./hardware-configuration.nix
     ];
+
 
   boot = {
     # Use the GRUB 2 boot loader.
@@ -104,6 +100,22 @@
       poppler
     sublime
   ];
+
+
+  nixpkgs.config = {
+    allowUnfree = true;
+
+    firefox = {
+     # enableGoogleTalkPlugin = true;
+     enableAdobeFlash = true;
+    };
+
+    chromium = {
+     enablePepperFlash = true; # Chromium removed support for Mozilla (NPAPI) plugins so Adobe Flash no longer works 
+     enablePepperPDF = true;
+    };
+  };
+
 
   programs.bash = {
     enableCompletion = true;
