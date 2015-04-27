@@ -26,7 +26,7 @@
 
 
   networking = {
-    hostName = "T420"; # Define your hostname.
+    hostName = "T420";
     hostId = "49a4a0e6";
     useDHCP = true;
     interfaceMonitor = {
@@ -70,10 +70,10 @@
     # x11
     autorandr
 
-    # windowmanager
-    bspwm
-    sxhkd
-    dmenu
+      # windowmanager
+      bspwm
+      sxhkd
+      dmenu
 
     # web
     chromium
@@ -98,6 +98,7 @@
       # mediainfo
       perlPackages.ImageExifTool
       poppler
+
     sublime
   ];
 
@@ -160,6 +161,22 @@
     '';
   };
 
+  # Avahi - local network discovery
+  services.avahi = {
+    enable = true;
+
+    hostName = config.networking.hostName;
+    publishing = true;
+
+    # browseDomains = [];
+    # wideArea = false;
+    ipv4 = true;
+    ipv6 = false;
+
+    # resolve .local names
+    nssmdns = true;
+  };
+
   # Enable the X11 windowing system.
   services.xserver = {
     # autoStart = true;
@@ -172,22 +189,26 @@
     layout = "us,hu";
     # services.xserver.xkbOptions = "eurosign:e";
     xkbOptions = "grp:caps_toggle, grp_led:caps, terminate:ctrl_alt_bksp";
-    # xrandrHeads = [ "HDMI3" "LVDS1" "VGA1" ];
-    # xrandrHeads = [ "HDMI3" "LVDS1" "VGA1" ];
 
-    # synaptics.enable = true;
+    # use trackpoint exclusively
+    synaptics.enable = false;
     displayManager.slim.defaultUser = "kr";
-    displayManager.desktopManagerHandlesLidAndPower = false;
-    windowManager = {
-      default = "bspwm";
-      bspwm.enable = true;
-    };
+    displayManager.session =  [ {
+      name = "bspwm";
+      manage = "window";
+      start = "
+        ${pkgs.sxhkd}/bin/sxhkd -c /etc/nixos/sxhkdrc &
+        ${pkgs.bspwm}/bin/bspwm -c /etc/nixos/bspwmrc
+      ";
+    } ];
     desktopManager = {
        default = "none";
-#       xterm.enable = true;
-#       kde4.enable = false;
+       xterm.enable = false;
     };
+    # do not have a desktop manager - nor powermanager, lid will be managed by ACPI/systemd
+    displayManager.desktopManagerHandlesLidAndPower = false;
 
+    # configure laptop display & display on dock
     config = ''
       Section "Monitor"
         Identifier      "laptop panel"
