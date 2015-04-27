@@ -22,6 +22,7 @@
 
     kernelModules = [ "tp_smapi" ];
     extraModulePackages = [ config.boot.kernelPackages.tp_smapi ];
+    # tmpOnTmpfs = true;
   };
 
 
@@ -77,7 +78,7 @@
 
     # web
     chromium
-    firefox
+    firefoxWrapper
     wget
 
     # monitoring
@@ -87,9 +88,10 @@
     # pstree
 
     # dev, user env
-    git
+    gitAndTools.gitFull
     meld
     python
+    sourceHighlight
     # from https://github.com/magnetophon/nixosConfig
     ranger
       atool
@@ -117,6 +119,16 @@
     };
   };
 
+
+  programs.nano.nanorc = ''
+    set nowrap
+    set tabstospaces
+    set tabsize 4
+    include ${pkgs.nano}/share/nano/makefile.nanorc
+    include ${pkgs.nano}/share/nano/html.nanorc
+    include ${pkgs.nano}/share/nano/python.nanorc
+    include ${pkgs.nano}/share/nano/sh.nanorc
+  '';
 
   programs.bash = {
     enableCompletion = true;
